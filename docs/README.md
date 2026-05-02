@@ -4,18 +4,6 @@
 
 A web-based goniometer system for monitoring and tracking range of motion (ROM) exercises during home-based rehabilitation. Built with Three.js for 3D visualization and designed for telehealth integration.
 
-## Features
-
-✅ **3D Arm Visualization** - Real-time 3D rendering of joint movement
-✅ **Session Management** - Track repetitions, hold times, and angle precision
-✅ **Multi-Exercise Support** - Elbow flexion, wrist extension, knee flexion, shoulder
-✅ **Precision Tiers** - Visual feedback for accuracy (±10°, ±20°, ±30°)
-✅ **Demo Mode** - Try it now without hardware
-✅ **Clinical Export** - Download session data as CSV
-✅ **Patient Portal** - Post-session home care survey
-✅ **Responsive Design** - Works on desktop and tablet
-
-## Quick Start
 
 ### Play with Demo Mode
 1. Open [the live demo](https://kamronsoltani.github.io/goniometer)
