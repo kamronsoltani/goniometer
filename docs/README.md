@@ -1,4 +1,4 @@
-# GonioPro - Home Care Rehabilitation Analytics
+# Goniometric - Home Care Rehabilitation Analytics
 
 **Live Demo:** [https://kamronsoltani.github.io/goniometer](https://kamronsoltani.github.io/goniometer)
 
