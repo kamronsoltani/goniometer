@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>GonioPro // Home Care Analytics</title>
+   <title>GONIOMETRIX // Home Care Analytics</title>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
    <script src="https://cdn.tailwindcss.com"></script>
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,6 +15,7 @@
            --brand: #6366f1;
            --success: #10b981;
            --warning: #f59e0b;
+           --radius-panel: 1rem; /* match Tailwind rounded-2xl / main visualizer */
        }
 
 
@@ -32,6 +33,7 @@
            background: white;
            border: 2px solid var(--accent);
            box-shadow: 4px 4px 0px var(--accent);
+           border-radius: var(--radius-panel);
        }
 
 
@@ -42,6 +44,7 @@
            box-shadow: 3px 3px 0px var(--accent);
            font-weight: 700;
            transition: all 0.1s;
+           border-radius: var(--radius-panel);
        }
 
 
@@ -54,6 +57,7 @@
            border: 2px solid var(--accent);
            box-shadow: 3px 3px 0px var(--accent);
            font-weight: 700;
+           border-radius: var(--radius-panel);
        }
 
 
@@ -65,12 +69,14 @@
            text-transform: uppercase;
            font-size: 12px;
            cursor: pointer;
+           border-radius: var(--radius-panel);
        }
 
 
        .pain-btn {
            border: 2px solid var(--accent);
            transition: all 0.2s;
+           border-radius: var(--radius-panel);
        }
        .pain-selected {
            background: var(--brand);
@@ -79,11 +85,20 @@
        }
 
 
+       /* Outer frame so neo-style shadow is not clipped by canvas overflow */
+       .viz-frame {
+           border: 2px solid var(--accent);
+           border-radius: var(--radius-panel);
+           box-shadow: 4px 4px 0px var(--accent);
+       }
+
+
        #visualizer-container {
            height: 420px;
            background: #eef2f7;
-           border: 2px solid var(--accent);
            position: relative;
+           border-radius: var(--radius-panel);
+           overflow: hidden;
        }
 
 
@@ -93,9 +108,11 @@
        }
 
 
-       input[type=range] { -webkit-appearance: none; background: transparent; }
-       input[type=range]::-webkit-slider-runnable-track { height: 8px; background: #e2e8f0; border: 1px solid var(--accent); border-radius: 4px; }
+       input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; }
+       input[type=range]::-webkit-slider-runnable-track { height: 8px; background: #e2e8f0; border: 1px solid var(--accent); border-radius: var(--radius-panel); }
        input[type=range]::-webkit-slider-thumb { border: 2px solid var(--accent); height: 20px; width: 20px; background: var(--brand); -webkit-appearance: none; margin-top: -7px; border-radius: 50%; }
+       input[type=range]::-moz-range-track { height: 8px; background: #e2e8f0; border: 1px solid var(--accent); border-radius: var(--radius-panel); }
+       input[type=range]::-moz-range-thumb { border: 2px solid var(--accent); height: 20px; width: 20px; background: var(--brand); border-radius: 50%; }
       
        .hold-active {
            animation: pulse-indigo 1s infinite;
@@ -175,7 +192,7 @@
                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div class="space-y-2">
                            <label class="mono text-[11px] font-bold uppercase">Setup Difficulty:</label>
-                           <select id="surveySetup" class="w-full border-2 border-slate-900 p-2 mono text-xs outline-none focus:bg-indigo-50">
+                           <select id="surveySetup" class="w-full border-2 border-slate-900 p-2 mono text-xs outline-none focus:bg-indigo-50 rounded-2xl">
                                <option value="easy">EASY (NO HELP)</option>
                                <option value="assisted">NEEDED ASSISTANCE</option>
                                <option value="difficult">HARD TO STRAP ON</option>
@@ -183,7 +200,7 @@
                        </div>
                        <div class="space-y-2">
                            <label class="mono text-[11px] font-bold uppercase">Confidence Level:</label>
-                           <select id="surveyConfidence" class="w-full border-2 border-slate-900 p-2 mono text-xs outline-none focus:bg-indigo-50">
+                           <select id="surveyConfidence" class="w-full border-2 border-slate-900 p-2 mono text-xs outline-none focus:bg-indigo-50 rounded-2xl">
                                <option value="high" selected>FEELING PROGRESS</option>
                                <option value="neutral">STABLE / NO CHANGE</option>
                                <option value="low">FEELING WEAKNESS</option>
@@ -195,7 +212,7 @@
 
                <div class="space-y-2">
                    <h3 class="font-bold border-b-2 border-slate-900 pb-1 text-sm uppercase">Message for Physical Therapist</h3>
-                   <textarea id="surveyComments" placeholder="Note any clicking, swelling, or unusual sensations..." class="w-full border-2 border-slate-900 p-3 mono text-xs h-24 outline-none focus:bg-indigo-50 resize-none"></textarea>
+                   <textarea id="surveyComments" placeholder="Note any clicking, swelling, or unusual sensations..." class="w-full border-2 border-slate-900 p-3 mono text-xs h-24 outline-none focus:bg-indigo-50 resize-none rounded-2xl"></textarea>
                </div>
 
 
@@ -211,10 +228,12 @@
    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
        <div>
            <div class="flex items-center gap-3">
-               <div class="w-12 h-12 bg-indigo-600 border-2 border-slate-900 flex items-center justify-center font-bold text-white text-2xl rounded-lg shadow-sm">G</div>
+               <img src="docs/images/Logo.jpeg" alt="GONIOMETRIX" class="h-12 w-auto max-w-[160px] object-contain border-2 border-slate-900 rounded-2xl shadow-sm bg-white p-0.5" width="160" height="48" />
                <div>
-                   <h1 class="text-3xl font-bold tracking-tight uppercase">Gonio<span class="text-indigo-600">Pro</span> <span class="text-xs border px-2 py-0.5 rounded-full border-slate-900 ml-2 bg-white">HOME CARE V3.0</span></h1>
-                   <p class="mono text-[10px] opacity-60 uppercase font-bold tracking-widest">Personal Rehabilitation Suite // Care Link Active</p>
+                   <h1 class="text-3xl font-bold tracking-tight flex flex-wrap items-center gap-2">
+                       <span class="leading-none">GONIO<span class="text-indigo-600">METRIX</span></span>
+                       <span class="text-xs border px-2 py-0.5 rounded-2xl border-slate-900 bg-white font-bold leading-none uppercase whitespace-nowrap">HOME CARE V3.0</span>
+                   </h1>
                </div>
            </div>
        </div>
@@ -233,13 +252,14 @@
        <!-- Left Column -->
        <section class="xl:col-span-8 flex flex-col gap-6">
           
-           <div id="visualizer-container" class="rounded-2xl overflow-hidden relative">
+           <div class="viz-frame">
+           <div id="visualizer-container" class="relative">
                <!-- Calibration Modal Overlay -->
                <div id="calibrationOverlay" class="absolute inset-0 z-50 flex flex-col items-center justify-center text-white hidden bg-slate-900/85 backdrop-blur-sm">
                    <div class="neo-card bg-slate-900 border-indigo-500 p-8 text-center max-w-sm">
                        <h2 class="text-2xl font-bold mb-2 uppercase">Calibration</h2>
                        <p class="text-xs mono opacity-60 mb-6">STAND STILL AND REMAIN AT NEUTRAL</p>
-                       <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700 mb-4">
+                       <div class="w-full h-2 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 mb-4">
                            <div id="calibrationProgress" class="h-full bg-indigo-500 transition-all duration-300" style="width: 0%"></div>
                        </div>
                        <p id="calibrationStatus" class="mono text-[10px] font-bold text-indigo-400 animate-pulse">DETECTING SENSOR STABILITY...</p>
@@ -266,7 +286,7 @@
                                <span>PROGRESS</span>
                                <span id="completionLabel">0%</span>
                            </div>
-                           <div class="h-2 bg-slate-100 border border-slate-900 rounded-full overflow-hidden">
+                           <div class="h-2 bg-slate-100 border border-slate-900 rounded-2xl overflow-hidden">
                                <div id="progressBar" class="h-full bg-indigo-500 transition-all duration-75" style="width: 0%"></div>
                            </div>
                        </div>
@@ -307,10 +327,11 @@
 
 
                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-center">
-                   <div id="guidanceMsg" class="bg-slate-900 text-white px-6 py-2 rounded-full font-bold text-xs uppercase tracking-tighter opacity-80 shadow-lg">
+                   <div id="guidanceMsg" class="bg-slate-900 text-white px-6 py-2 rounded-2xl font-bold text-xs uppercase tracking-tighter opacity-80 shadow-lg">
                        Session Idle
                    </div>
                </div>
+           </div>
            </div>
 
 
@@ -335,10 +356,11 @@
        <aside class="xl:col-span-4 flex flex-col gap-6">
           
            <div class="neo-card overflow-hidden">
-               <div class="flex bg-slate-100 border-b-2 border-slate-900">
-                   <button onclick="showTab('rx')" id="tab-rx" class="tab-btn active flex-1 py-3 mono text-[10px] font-bold uppercase border-r-2 border-slate-900">Session</button>
-                   <button onclick="showTab('config')" id="tab-config" class="tab-btn flex-1 py-3 mono text-[10px] font-bold uppercase border-r-2 border-slate-900">Config</button>
-                   <button onclick="showTab('logs')" id="tab-logs" class="tab-btn flex-1 py-3 mono text-[10px] font-bold uppercase">History</button>
+               <div class="flex flex-wrap bg-slate-100 border-b-2 border-slate-900">
+                   <button type="button" onclick="showTab('rx')" id="tab-rx" class="tab-btn active flex-1 min-w-[4.5rem] py-3 mono text-[9px] font-bold uppercase border-r-2 border-slate-900">Session</button>
+                   <button type="button" onclick="showTab('config')" id="tab-config" class="tab-btn flex-1 min-w-[4.5rem] py-3 mono text-[9px] font-bold uppercase border-r-2 border-slate-900">Config</button>
+                   <button type="button" onclick="showTab('predict')" id="tab-predict" class="tab-btn flex-1 min-w-[4.5rem] py-3 mono text-[9px] font-bold uppercase border-r-2 border-slate-900">Predict</button>
+                   <button type="button" onclick="showTab('logs')" id="tab-logs" class="tab-btn flex-1 min-w-[4.5rem] py-3 mono text-[9px] font-bold uppercase">History</button>
                </div>
 
 
@@ -349,7 +371,7 @@
                            <button id="sessionToggleBtn" class="btn-primary w-full py-4 uppercase text-sm flex items-center justify-center gap-2">
                                <span id="sessionToggleIcon">▶</span> <span id="sessionToggleText">Start Exercise</span>
                            </button>
-                           <button id="restartBtn" class="border-2 border-slate-900 w-full py-2 uppercase text-[10px] font-bold flex items-center justify-center gap-2 hover:bg-slate-100">
+                           <button id="restartBtn" class="border-2 border-slate-900 w-full py-2 uppercase text-[10px] font-bold flex items-center justify-center gap-2 hover:bg-slate-100 rounded-2xl">
                                ↺ Reset Session
                            </button>
                        </div>
@@ -357,10 +379,10 @@
                        <div class="pt-4 border-t border-slate-100">
                            <label class="block text-[10px] mono uppercase font-bold mb-3 opacity-50">Prescribed Goals</label>
                            <div class="grid grid-cols-2 gap-2 mb-4">
-                               <button onclick="setExercise(120, 'ELBOW_FLEX')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100">Elbow Flex</button>
-                               <button onclick="setExercise(45, 'WRIST_EXT')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100">Wrist Ext</button>
-                               <button onclick="setExercise(90, 'KNEE_FLEX')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100">Knee Flex</button>
-                               <button onclick="setExercise(160, 'SHOULDER')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100">Shoulder</button>
+                               <button onclick="setExercise(120, 'ELBOW_FLEX')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100 rounded-2xl">Elbow Flex</button>
+                               <button onclick="setExercise(45, 'WRIST_EXT')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100 rounded-2xl">Wrist Ext</button>
+                               <button onclick="setExercise(90, 'KNEE_FLEX')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100 rounded-2xl">Knee Flex</button>
+                               <button onclick="setExercise(160, 'SHOULDER')" class="border-2 border-slate-900 p-2 text-[10px] font-bold uppercase hover:bg-slate-100 rounded-2xl">Shoulder</button>
                            </div>
                           
                            <div class="space-y-4">
@@ -386,16 +408,16 @@
                    <div id="content-config" class="hidden space-y-4">
                        <div>
                            <label class="block text-[10px] mono uppercase font-bold mb-1 opacity-60">Patient Reference ID</label>
-                           <input type="text" id="patientId" value="P-7821" class="w-full border-2 border-slate-900 p-2 rounded mono text-sm">
+                           <input type="text" id="patientId" value="P-7821" class="w-full border-2 border-slate-900 p-2 rounded-2xl mono text-sm">
                        </div>
                        <div class="grid grid-cols-2 gap-4">
                            <div>
                                <label class="block text-[10px] mono uppercase font-bold mb-1 opacity-60">Target Reps</label>
-                               <input type="number" id="targetReps" value="10" class="w-full border-2 border-slate-900 p-2 rounded mono text-sm">
+                               <input type="number" id="targetReps" value="10" class="w-full border-2 border-slate-900 p-2 rounded-2xl mono text-sm">
                            </div>
                            <div>
                                <label class="block text-[10px] mono uppercase font-bold mb-1 opacity-60">Limb</label>
-                               <select id="limbSide" class="w-full border-2 border-slate-900 p-2 rounded mono text-sm">
+                               <select id="limbSide" class="w-full border-2 border-slate-900 p-2 rounded-2xl mono text-sm">
                                    <option>Left</option>
                                    <option>Right</option>
                                </select>
@@ -404,12 +426,30 @@
                    </div>
 
 
+                   <!-- ROM goal prediction (daily peaks) -->
+                   <div id="content-predict" class="hidden space-y-4">
+                       <p class="text-[11px] leading-relaxed opacity-80">After you finish sessions on different days, we fit a simple trend to your <span class="font-bold">best angle reached that day</span> and estimate when you might match your <span class="font-bold">session target angle</span> (the joint goal from the Session tab). Data stays in this browser only.</p>
+                       <div class="border-2 border-slate-900 rounded-2xl p-3 bg-white">
+                           <p class="text-[10px] mono uppercase font-bold mb-1 opacity-50">Goal peak ROM</p>
+                           <p class="text-lg font-bold tracking-tight"><span id="predictionGoalMirror" class="text-indigo-600">120°</span> <span class="text-xs font-bold uppercase opacity-40">same as target angle</span></p>
+                           <p class="text-[10px] mono uppercase font-bold opacity-50 mt-1">Joint / exercise</p>
+                           <p id="predictionJointName" class="text-sm font-bold text-slate-900 tracking-tight">ELBOW_FLEX</p>
+                       </div>
+                       <button type="button" id="predictionRefreshBtn" class="btn-primary w-full py-3 uppercase text-xs">Update estimate</button>
+                       <div id="predictionResult" class="border-2 border-slate-900 bg-indigo-50 rounded-2xl p-4 text-sm leading-snug font-medium"></div>
+                       <div>
+                           <p class="text-[10px] mono uppercase font-bold mb-2 opacity-50">Daily peaks (logged)</p>
+                           <ul id="predictionHistoryList" class="text-[10px] font-medium space-y-1 max-h-32 overflow-y-auto border-2 border-slate-900 rounded-2xl p-2 bg-white"></ul>
+                       </div>
+                   </div>
+
+
                    <!-- Logs/History -->
                    <div id="content-logs" class="hidden">
-                       <div class="bg-black text-emerald-400 p-4 rounded font-mono text-[9px] h-64 overflow-y-auto border-2 border-slate-900 mb-4">
+                       <div class="bg-black text-emerald-400 p-4 rounded-2xl font-mono text-[9px] h-64 overflow-y-auto border-2 border-slate-900 mb-4">
                            <p id="consoleLog">> System Ready</p>
                        </div>
-                       <button id="exportBtn" class="w-full border-2 border-slate-900 p-3 text-[10px] font-bold uppercase bg-slate-900 text-white">Save Clinical CSV</button>
+                       <button id="exportBtn" class="w-full border-2 border-slate-900 p-3 text-[10px] font-bold uppercase bg-slate-900 text-white rounded-2xl">Save Clinical CSV</button>
                    </div>
                </div>
            </div>
@@ -463,7 +503,8 @@
        let activeTier = 0;
        let lastTierFeedbackAt = 0;
        let lastHoldChimeSecond = 0;
-
+       let demoMode = true;
+       let demoAngleSimulation = 0;
 
        let calibrationFrames = 0;
        const CALIBRATION_THRESHOLD = 60;
@@ -623,20 +664,30 @@
 
        /** SESSION **/
        function toggleSession() {
-           if (sessionStatus === 'IDLE') startDeviceCalibration();
-           else if (sessionStatus === 'DEVICE_CALIBRATING') captureDeviceCalibrationStep();
-           else if (sessionStatus === 'IDLE') startCalibration();
-           else stopSession();
+           if (sessionStatus === 'ENDING') return;
+           if (sessionStatus === 'ACTIVE') {
+               stopSession();
+               return;
+           }
+           if (sessionStatus === 'CALIBRATING') {
+               completeCalibration();
+               return;
+           }
+           if (sessionStatus === 'DEVICE_CALIBRATING') {
+               captureDeviceCalibrationStep();
+               return;
+           }
+           if (bleCommandCharacteristic) startDeviceCalibration();
+           else startCalibration();
        }
 
 
        async function startDeviceCalibration() {
            if (!bleCommandCharacteristic) {
-               logToConsole("Connect device before starting exercise.");
+               logToConsole("Connect your GonioPro device first (Chrome / Edge, HTTPS or localhost).");
                document.getElementById('statusText').innerText = 'CONNECT FIRST';
                return;
            }
-
            sessionStatus = 'DEVICE_CALIBRATING';
            deviceCalibrationStep = 0;
            offsetAngle = 0;
@@ -660,7 +711,6 @@
                logToConsole("Zero pose captured.");
                return;
            }
-
            await sendDeviceCommand('n');
            deviceCalibrationStep = 2;
            document.getElementById('calibrationProgress').style.width = '100%';
@@ -683,7 +733,7 @@
            sessionStatus = 'CALIBRATING';
            calibrationFrames = 0;
            document.getElementById('calibrationOverlay').classList.remove('hidden');
-           document.getElementById('sessionToggleText').innerText = "Abort";
+           document.getElementById('sessionToggleText').innerText = "Calibrating...";
            document.getElementById('sessionToggleBtn').className = "btn-danger w-full py-4 uppercase text-sm flex items-center justify-center gap-2";
        }
 
@@ -695,11 +745,16 @@
            document.getElementById('sessionToggleBtn').className = "btn-danger w-full py-4 uppercase text-sm flex items-center justify-center gap-2";
            offsetAngle = currentAngle;
            resetRepState();
-           logToConsole("Session Active.");
+           logToConsole(demoMode ? "Session active — demo arm simulation." : "Session active — live device.");
        }
 
 
        function stopSession() {
+           recordDailySessionPeak(sessionPeak);
+           if (sessionStatus === 'DEVICE_CALIBRATING') {
+               document.getElementById('calibrationOverlay').classList.add('hidden');
+               deviceCalibrationStep = 0;
+           }
            sessionStatus = 'IDLE';
            document.getElementById('sessionToggleText').innerText = "Start Exercise";
            document.getElementById('sessionToggleBtn').className = "btn-primary w-full py-4 uppercase text-sm flex items-center justify-center gap-2";
@@ -763,17 +818,120 @@
        /** ANALYTICS **/
        function holdChimeCommandForSecond(completedSecond) {
            if (holdTimeTarget <= 0) return 'z';
-
            const targetSeconds = Math.max(1, Math.ceil(holdTimeTarget));
-           const progress = targetSeconds === 1
-               ? 1
-               : (completedSecond - 1) / (targetSeconds - 1);
+           const progress = targetSeconds === 1 ? 1 : (completedSecond - 1) / (targetSeconds - 1);
            const chimeCommands = ['c', 'd', 'e', 'f', 'z'];
            const index = Math.min(
                chimeCommands.length - 1,
                Math.max(0, Math.round(progress * (chimeCommands.length - 1)))
            );
            return chimeCommands[index];
+       }
+
+
+       function parseKeyValuePacket(line) {
+           const parts = line.trim().split(',');
+           const packet = { type: parts.shift() };
+           parts.forEach(part => {
+               const idx = part.indexOf('=');
+               if (idx === -1) return;
+               const key = part.slice(0, idx).trim();
+               const raw = part.slice(idx + 1).trim();
+               const numeric = Number(raw);
+               packet[key] = Number.isNaN(numeric) ? raw : numeric;
+           });
+           return packet;
+       }
+
+
+       function applyDevicePacket(packet) {
+           if (packet.type !== 'DATA') return;
+           lastDevicePacket = packet;
+           isConnected = packet.forearm_ready === 1 && packet.bicep_ready === 1;
+
+           document.getElementById('statusDot').className = 'w-3 h-3 rounded-full ' + (isConnected ? 'bg-emerald-500' : 'bg-amber-500');
+           document.getElementById('statusText').innerText = isConnected ? (packet.calibrated ? 'DEVICE LIVE' : 'UNCALIBRATED') : 'CHECK IMUS';
+           document.getElementById('connectBtn').innerText = isConnected ? 'BLE Live' : 'BLE Connected';
+           const pulse = document.getElementById('devicePulse');
+           if (pulse) pulse.className = 'w-2 h-2 rounded-full ' + (isConnected ? 'bg-emerald-400' : 'bg-amber-400');
+
+           if (typeof packet.angle === 'number') {
+               demoMode = false;
+               processData(packet.angle);
+           }
+       }
+
+
+       async function sendDeviceCommand(command) {
+           if (!bleCommandCharacteristic) return;
+           const payload = new TextEncoder().encode(command);
+           if (bleCommandCharacteristic.writeValueWithoutResponse) {
+               await bleCommandCharacteristic.writeValueWithoutResponse(payload);
+           } else {
+               await bleCommandCharacteristic.writeValue(payload);
+           }
+       }
+
+
+       function handleBleDataNotification(event) {
+           const decoder = new TextDecoder();
+           bleReceiveBuffer += decoder.decode(event.target.value);
+           const lines = bleReceiveBuffer.split(/\r?\n/);
+           bleReceiveBuffer = lines.pop() || '';
+           lines.forEach(line => {
+               const trimmed = line.trim();
+               if (!trimmed) return;
+               if (trimmed.startsWith('DATA,')) {
+                   applyDevicePacket(parseKeyValuePacket(trimmed));
+               }
+           });
+       }
+
+
+       function handleBleDisconnect() {
+           bleServer = null;
+           bleDataCharacteristic = null;
+           bleCommandCharacteristic = null;
+           isConnected = false;
+           demoMode = true;
+           document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-slate-300';
+           document.getElementById('statusText').innerText = 'Idle';
+           document.getElementById('connectBtn').innerText = 'Connect Device';
+           const pulse = document.getElementById('devicePulse');
+           if (pulse) pulse.className = 'w-2 h-2 rounded-full bg-slate-400';
+           logToConsole("BLE device disconnected.");
+       }
+
+
+       async function connectBleDevice() {
+           try {
+               if (!navigator.bluetooth) {
+                   logToConsole("Web Bluetooth requires Chrome or Edge on HTTPS or localhost.");
+                   document.getElementById('statusText').innerText = 'WEB BLE N/A';
+                   return;
+               }
+               bleDevice = await navigator.bluetooth.requestDevice({
+                   filters: [{ namePrefix: 'GonioPro' }],
+                   optionalServices: [BLE_SERVICE_UUID]
+               });
+               bleDevice.addEventListener('gattserverdisconnected', handleBleDisconnect);
+               bleServer = await bleDevice.gatt.connect();
+               const service = await bleServer.getPrimaryService(BLE_SERVICE_UUID);
+               bleDataCharacteristic = await service.getCharacteristic(BLE_DATA_UUID);
+               bleCommandCharacteristic = await service.getCharacteristic(BLE_COMMAND_UUID);
+               await bleDataCharacteristic.startNotifications();
+               bleDataCharacteristic.addEventListener('characteristicvaluechanged', handleBleDataNotification);
+               document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-emerald-500';
+               document.getElementById('statusText').innerText = 'BLE OPEN';
+               document.getElementById('connectBtn').innerText = 'BLE Connected';
+               const pulse = document.getElementById('devicePulse');
+               if (pulse) pulse.className = 'w-2 h-2 rounded-full bg-emerald-400';
+               logToConsole("BLE device connected.");
+           } catch (err) {
+               document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-red-500';
+               document.getElementById('statusText').innerText = 'CONNECT FAIL';
+               logToConsole(`Connect failed: ${err.message}`);
+           }
        }
 
 
@@ -790,6 +948,7 @@
                if (calibrationFrames >= CALIBRATION_THRESHOLD) completeCalibration();
                return;
            }
+
 
            if (sessionStatus === 'DEVICE_CALIBRATING') {
                document.getElementById('angleValue').innerText = currentAngle.toFixed(1) + "°";
@@ -824,7 +983,8 @@
 
 
                if (inZone && !isHolding) {
-                   isHolding = true; holdStartTime = Date.now();
+                   isHolding = true;
+                   holdStartTime = Date.now();
                    document.getElementById('holdTimerCard').classList.add('hold-active');
                    document.getElementById('holdStatusBadge').classList.remove('hidden');
                } else if (!inZone && isHolding) {
@@ -878,7 +1038,8 @@
 
 
        function finalizeRep() {
-           isMoving = false; isHolding = false;
+           isMoving = false;
+           isHolding = false;
            totalReps++;
            repHistory.push({
                repNum: totalReps,
@@ -950,7 +1111,7 @@
 
        function exportReport() {
            if (repHistory.length === 0) return;
-           let csv = "GonioPro Home Care Report\nPatient," + document.getElementById('patientId').value + "\n\n";
+           let csv = "GONIOMETRIX Home Care Report\nPatient," + document.getElementById('patientId').value + "\n\n";
            if (lastSurveyResults) {
                csv += "SURVEY RESULTS\nPain," + lastSurveyResults.pain + "/10\nMobility," + lastSurveyResults.ease + "\nSetup," + lastSurveyResults.setup + "\nConfidence," + lastSurveyResults.confidence + "\nNotes," + lastSurveyResults.comments + "\n\n";
            }
@@ -988,8 +1149,141 @@
        function showTab(tab) {
            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
            document.getElementById(`tab-${tab}`).classList.add('active');
-           ['rx', 'config', 'logs'].forEach(t => document.getElementById(`content-${t}`).classList.add('hidden'));
+           ['rx', 'config', 'predict', 'logs'].forEach(t => document.getElementById(`content-${t}`).classList.add('hidden'));
            document.getElementById(`content-${tab}`).classList.remove('hidden');
+           if (tab === 'predict') updatePredictionPanel();
+       }
+
+
+       const DAILY_ROM_LOG_KEY = 'goniometrix_daily_rom_peaks_v1';
+
+
+       function loadDailyRomLog() {
+           try {
+               const raw = localStorage.getItem(DAILY_ROM_LOG_KEY);
+               if (!raw) return [];
+               const arr = JSON.parse(raw);
+               return Array.isArray(arr) ? arr.filter(e => e && typeof e.date === 'string' && Number.isFinite(Number(e.peakRom))) : [];
+           } catch (e) {
+               return [];
+           }
+       }
+
+
+       function saveDailyRomLog(log) {
+           localStorage.setItem(DAILY_ROM_LOG_KEY, JSON.stringify(log));
+       }
+
+
+       function recordDailySessionPeak(peakDeg) {
+           const peak = Math.round(Math.max(0, Number(peakDeg) || 0));
+           if (peak <= 0) return;
+           const today = new Date().toISOString().slice(0, 10);
+           let log = loadDailyRomLog();
+           const i = log.findIndex(e => e.date === today);
+           if (i >= 0) log[i].peakRom = Math.max(log[i].peakRom, peak);
+           else log.push({ date: today, peakRom: peak });
+           log.sort((a, b) => a.date.localeCompare(b.date));
+           saveDailyRomLog(log.slice(-120));
+       }
+
+
+       function linearRegression(xs, ys) {
+           const n = xs.length;
+           if (n < 2) return null;
+           let sx = 0, sy = 0, sxy = 0, sxx = 0;
+           for (let i = 0; i < n; i++) {
+               sx += xs[i];
+               sy += ys[i];
+               sxy += xs[i] * ys[i];
+               sxx += xs[i] * xs[i];
+           }
+           const denom = n * sxx - sx * sx;
+           if (Math.abs(denom) < 1e-6) return null;
+           const m = (n * sxy - sx * sy) / denom;
+           const b = (sy - m * sx) / n;
+           return { m, b };
+       }
+
+
+       function syncPredictionGoalMirror() {
+           const mir = document.getElementById('predictionGoalMirror');
+           const jn = document.getElementById('predictionJointName');
+           const gt = document.getElementById('goalText');
+           if (mir) mir.textContent = targetAngle + '°';
+           if (jn && gt) jn.textContent = gt.innerText;
+       }
+
+
+       function updatePredictionPanel() {
+           syncPredictionGoalMirror();
+           const out = document.getElementById('predictionResult');
+           const listEl = document.getElementById('predictionHistoryList');
+           const goal = Math.min(175, Math.max(10, Math.round(Number(targetAngle) || 10)));
+
+           const log = loadDailyRomLog();
+           listEl.innerHTML = '';
+           if (log.length === 0) {
+               const li = document.createElement('li');
+               li.className = 'opacity-50';
+               li.textContent = 'No days logged yet.';
+               listEl.appendChild(li);
+           } else {
+               log.slice(-14).reverse().forEach(entry => {
+                   const li = document.createElement('li');
+                   li.textContent = `${entry.date} — peak ${entry.peakRom}°`;
+                   listEl.appendChild(li);
+               });
+           }
+
+           const lastPeak = log.length ? log[log.length - 1].peakRom : 0;
+           if (lastPeak >= goal) {
+               out.textContent = `Your latest logged best (${lastPeak}°) is already at or above your goal (${goal}°).`;
+               return;
+           }
+           if (log.length < 2) {
+               out.textContent = 'Finish at least two sessions on two different calendar days to estimate a trend. Each time you end a session, we save that day’s best angle reached.';
+               return;
+           }
+
+           const baseMs = new Date(log[0].date + 'T12:00:00').getTime();
+           const xs = log.map(e => Math.max(0, Math.round((new Date(e.date + 'T12:00:00').getTime() - baseMs) / 86400000)));
+           const ys = log.map(e => Number(e.peakRom));
+           const reg = linearRegression(xs, ys);
+           if (!reg) {
+               out.textContent = 'Not enough variation in the log to estimate a trend.';
+               return;
+           }
+           const m = reg.m;
+           const b = reg.b;
+           const n = log.length;
+           const lastIdx = n - 1;
+           const xLast = xs[lastIdx];
+           const fittedLast = m * xLast + b;
+
+           if (m < 0.08) {
+               out.textContent = 'Your logged peaks are not trending up enough to forecast a date. Keep training and check again after more progress.';
+               return;
+           }
+
+           const xGoal = (goal - b) / m;
+           const daysAfterLast = Math.ceil(xGoal - xLast - 1e-9);
+
+           if (!Number.isFinite(daysAfterLast) || daysAfterLast > 3650) {
+               out.textContent = 'Based on the current trend, this goal looks too far out for a useful date. Try a smaller interim goal.';
+               return;
+           }
+
+           if (daysAfterLast <= 0) {
+               out.textContent = `The trend suggests you may be very close to ${goal}° (about ${fittedLast.toFixed(0)}° fitted at your last logged day). Keep going.`;
+               return;
+           }
+
+           const lastDate = new Date(log[lastIdx].date + 'T12:00:00');
+           const pred = new Date(lastDate);
+           pred.setDate(pred.getDate() + daysAfterLast);
+           const predStr = pred.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+           out.textContent = `Rough estimate: about ${goal}° peak by ${predStr} (${daysAfterLast} calendar day${daysAfterLast === 1 ? '' : 's'} after your last logged day), if the recent trend (~${m.toFixed(2)}° per calendar day in this window) continued. For motivation only—not medical advice.`;
        }
 
 
@@ -999,6 +1293,8 @@
            document.getElementById('angleSlider').value = angle;
            document.getElementById('sliderVal').innerText = angle + "°";
            document.getElementById('targetDisplayHud').innerText = angle + "°";
+           syncPredictionGoalMirror();
+           if (!document.getElementById('content-predict').classList.contains('hidden')) updatePredictionPanel();
            logToConsole(`Goal: ${name}`);
        }
 
@@ -1010,109 +1306,24 @@
            document.getElementById('targetRepsDisplay').innerText = value;
        }
 
-
-       function parseKeyValuePacket(line) {
-           const parts = line.trim().split(',');
-           const packet = { type: parts.shift() };
-           parts.forEach(part => {
-               const idx = part.indexOf('=');
-               if (idx === -1) return;
-               const key = part.slice(0, idx).trim();
-               const raw = part.slice(idx + 1).trim();
-               const numeric = Number(raw);
-               packet[key] = Number.isNaN(numeric) ? raw : numeric;
-           });
-           return packet;
-       }
-
-
-       function applyDevicePacket(packet) {
-           if (packet.type !== 'DATA') return;
-           lastDevicePacket = packet;
-           isConnected = packet.forearm_ready === 1 && packet.bicep_ready === 1;
-
-           document.getElementById('statusDot').className = 'w-3 h-3 rounded-full ' + (isConnected ? 'bg-emerald-500' : 'bg-amber-500');
-           document.getElementById('statusText').innerText = isConnected ? (packet.calibrated ? 'DEVICE LIVE' : 'UNCALIBRATED') : 'CHECK IMUS';
-           document.getElementById('connectBtn').innerText = isConnected ? 'BLE Live' : 'BLE Connected';
-
-           if (typeof packet.angle === 'number') {
-               processData(packet.angle);
-           }
-       }
-
-
-       async function sendDeviceCommand(command) {
-           if (!bleCommandCharacteristic) {
-               logToConsole("Device command ignored: not connected.");
-               return;
-           }
-
-           const payload = new TextEncoder().encode(command);
-           if (bleCommandCharacteristic.writeValueWithoutResponse) {
-               await bleCommandCharacteristic.writeValueWithoutResponse(payload);
+       /** DEMO MODE - Simulate arm movement **/
+       function updateDemoMode() {
+           if (sessionStatus !== 'ACTIVE' || !demoMode) return;
+           
+           // Simulate smooth arm movement for demo
+           const time = Date.now();
+           const cycleTime = 4000; // 4 second cycle
+           const phase = (time % cycleTime) / cycleTime;
+           
+           if (phase < 0.5) {
+               // Move arm up to target
+               demoAngleSimulation = phase * 2 * targetAngle;
            } else {
-               await bleCommandCharacteristic.writeValue(payload);
+               // Move arm back down
+               demoAngleSimulation = (2 - phase * 2) * targetAngle;
            }
-       }
-
-
-       function handleBleDataNotification(event) {
-           const decoder = new TextDecoder();
-           bleReceiveBuffer += decoder.decode(event.target.value);
-           const lines = bleReceiveBuffer.split(/\r?\n/);
-           bleReceiveBuffer = lines.pop() || '';
-           lines.forEach(line => {
-               const trimmed = line.trim();
-               if (!trimmed) return;
-               if (trimmed.startsWith('DATA,')) {
-                   applyDevicePacket(parseKeyValuePacket(trimmed));
-               }
-           });
-       }
-
-
-       function handleBleDisconnect() {
-           bleServer = null;
-           bleDataCharacteristic = null;
-           bleCommandCharacteristic = null;
-           isConnected = false;
-           document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-slate-400';
-           document.getElementById('statusText').innerText = 'BLE DISCONNECTED';
-           document.getElementById('connectBtn').innerText = 'Connect Device';
-           logToConsole("BLE device disconnected.");
-       }
-
-
-       async function connectBleDevice() {
-           try {
-               if (!navigator.bluetooth) {
-                   logToConsole("Web Bluetooth requires Chrome or Edge on localhost/HTTPS.");
-                   document.getElementById('statusText').innerText = 'WEB BLE N/A';
-                   return;
-               }
-
-               bleDevice = await navigator.bluetooth.requestDevice({
-                   filters: [{ namePrefix: 'GonioPro' }],
-                   optionalServices: [BLE_SERVICE_UUID]
-               });
-               bleDevice.addEventListener('gattserverdisconnected', handleBleDisconnect);
-
-               bleServer = await bleDevice.gatt.connect();
-               const service = await bleServer.getPrimaryService(BLE_SERVICE_UUID);
-               bleDataCharacteristic = await service.getCharacteristic(BLE_DATA_UUID);
-               bleCommandCharacteristic = await service.getCharacteristic(BLE_COMMAND_UUID);
-               await bleDataCharacteristic.startNotifications();
-               bleDataCharacteristic.addEventListener('characteristicvaluechanged', handleBleDataNotification);
-
-               document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-emerald-500';
-               document.getElementById('statusText').innerText = 'BLE OPEN';
-               document.getElementById('connectBtn').innerText = 'BLE Connected';
-               logToConsole("BLE device connected.");
-           } catch (err) {
-               document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-red-500';
-               document.getElementById('statusText').innerText = 'CONNECT FAIL';
-               logToConsole(`Connect failed: ${err.message}`);
-           }
+           
+           processData(demoAngleSimulation + offsetAngle);
        }
 
 
@@ -1126,19 +1337,24 @@
                handleRing.scale.setScalar(1 + 0.1 * Math.sin(handlePulse));
            }
            renderer.render(scene, camera);
+           updateDemoMode();
        }
 
 
        window.onload = () => {
-           initThree(); initChart(); animate();
+           initThree();
+           initChart();
+           animate();
            document.getElementById('sessionToggleBtn').onclick = toggleSession;
            document.getElementById('connectBtn').onclick = connectBleDevice;
            document.getElementById('exportBtn').onclick = exportReport;
            document.getElementById('restartBtn').onclick = () => window.location.reload();
            document.getElementById('angleSlider').oninput = (e) => {
-               targetAngle = parseInt(e.target.value);
+               targetAngle = parseInt(e.target.value, 10);
                document.getElementById('sliderVal').innerText = targetAngle + "°";
                document.getElementById('targetDisplayHud').innerText = targetAngle + "°";
+               syncPredictionGoalMirror();
+               if (!document.getElementById('content-predict').classList.contains('hidden')) updatePredictionPanel();
            };
            document.getElementById('holdSlider').oninput = (e) => {
                holdTimeTarget = parseInt(e.target.value);
@@ -1147,6 +1363,10 @@
            };
            document.getElementById('targetReps').oninput = syncTargetReps;
            syncTargetReps();
+           document.getElementById('predictionRefreshBtn').onclick = updatePredictionPanel;
+           syncPredictionGoalMirror();
+           logToConsole("Welcome to GONIOMETRIX");
+           logToConsole("Connect Device for live BLE (Chrome/Edge), or Start Exercise for on-screen demo / drag the arm");
        };
    </script>
 </body>
