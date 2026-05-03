@@ -139,7 +139,7 @@
            <div class="flex justify-between items-start mb-6">
                <div>
                    <h2 class="text-3xl font-bold uppercase tracking-tighter">Session Recovery Log</h2>
-                   <p class="mono text-xs opacity-60">PATIENT HOME-CARE PORTAL V.2.6</p>
+                   <p class="mono text-xs opacity-60">PATIENT HOME-CARE PORTAL V.3.0</p>
                </div>
                <div class="bg-black text-[#00ff00] px-3 py-1 mono text-xs font-bold" id="finalRepCount">REPS: 0</div>
            </div>
@@ -213,7 +213,7 @@
            <div class="flex items-center gap-3">
                <div class="w-12 h-12 bg-indigo-600 border-2 border-slate-900 flex items-center justify-center font-bold text-white text-2xl rounded-lg shadow-sm">G</div>
                <div>
-                   <h1 class="text-3xl font-bold tracking-tight uppercase">Gonio<span class="text-indigo-600">Pro</span> <span class="text-xs border px-2 py-0.5 rounded-full border-slate-900 ml-2 bg-white">HOME CARE V2.6</span></h1>
+                   <h1 class="text-3xl font-bold tracking-tight uppercase">Gonio<span class="text-indigo-600">Pro</span> <span class="text-xs border px-2 py-0.5 rounded-full border-slate-900 ml-2 bg-white">HOME CARE V3.0</span></h1>
                    <p class="mono text-[10px] opacity-60 uppercase font-bold tracking-widest">Personal Rehabilitation Suite // Care Link Active</p>
                </div>
            </div>
@@ -314,7 +314,7 @@
            </div>
 
 
-           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                <div class="neo-card p-4">
                    <p class="text-[10px] mono uppercase opacity-40 font-bold mb-1">Live Angle</p>
                    <p id="angleValue" class="text-4xl font-bold">0.0°</p>
@@ -322,13 +322,6 @@
                <div class="neo-card p-4">
                    <p class="text-[10px] mono uppercase opacity-40 font-bold mb-1">Peak ROM</p>
                    <p id="peakFlex" class="text-4xl font-bold text-indigo-600">0°</p>
-               </div>
-               <div class="neo-card p-4">
-                   <p class="text-[10px] mono uppercase opacity-40 font-bold mb-1">Stability</p>
-                   <div class="flex items-baseline gap-1">
-                       <p id="stabilityIndex" class="text-4xl font-bold">--</p>
-                       <span class="text-xs font-bold opacity-30">%</span>
-                   </div>
                </div>
                <div class="neo-card p-4">
                    <p class="text-[10px] mono uppercase opacity-40 font-bold mb-1">Hold Target</p>
@@ -425,7 +418,7 @@
            <div class="neo-card p-4 bg-slate-50 flex justify-between items-center">
                <div class="flex items-center gap-2">
                    <div id="devicePulse" class="w-2 h-2 rounded-full bg-slate-400"></div>
-                   <span class="mono text-[8px] font-bold uppercase">Care Link Protocol v2.6</span>
+                   <span class="mono text-[8px] font-bold uppercase">Care Link Protocol v3.0</span>
                </div>
                <button onclick="openSurvey()" class="mono text-[8px] font-bold uppercase text-indigo-600 hover:underline">Manual Log Entry</button>
            </div>
