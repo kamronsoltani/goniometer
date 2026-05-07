@@ -409,6 +409,10 @@
                        <div>
                            <label class="block text-[10px] mono uppercase font-bold mb-1 opacity-60">Patient Reference ID</label>
                            <input type="text" id="patientId" value="P-7821" class="w-full border-2 border-slate-900 p-2 rounded-2xl mono text-sm">
+                           <div class="grid grid-cols-2 gap-2 mt-2">
+                               <button type="button" id="configPatientApplyBtn" class="btn-primary py-2 uppercase text-[10px]">Apply ID</button>
+                               <button type="button" id="configPatientResetBtn" class="border-2 border-slate-900 bg-white py-2 rounded-2xl uppercase text-[10px] font-bold hover:bg-slate-100">Reset ID</button>
+                           </div>
                        </div>
                        <div class="grid grid-cols-2 gap-4">
                            <div>
@@ -1215,11 +1219,53 @@
        }
 
 
+       function isMockPredictionPatient(patientIdRaw) {
+           const id = String(patientIdRaw || '').trim().toUpperCase();
+           return id === 'DEMO' || id.startsWith('DEMO-');
+       }
+
+
+       function renderMockElbowPrediction(out, listEl, goal) {
+           const today = new Date();
+           const mockPeaks = [89, 93, 96, 100, 103, 106];
+           listEl.innerHTML = '';
+
+           for (let i = 0; i < mockPeaks.length; i++) {
+               const d = new Date(today);
+               d.setDate(today.getDate() - (mockPeaks.length - 1 - i));
+               const li = document.createElement('li');
+               li.textContent = `${d.toISOString().slice(0, 10)} — peak ${mockPeaks[i]}°`;
+               listEl.appendChild(li);
+           }
+
+           const latestPeak = mockPeaks[mockPeaks.length - 1];
+           const dailyGain = 2.1;
+           const remaining = Math.max(0, goal - latestPeak);
+           const daysAfterLast = Math.max(1, Math.ceil(remaining / dailyGain));
+           const pred = new Date(today);
+           pred.setDate(pred.getDate() + daysAfterLast);
+           const predStr = pred.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+           out.innerHTML = `
+               <div class="space-y-2">
+                   <p class="text-[10px] mono uppercase opacity-60 font-bold">Estimated ROM Goal Date</p>
+                   <p class="text-2xl font-black tracking-tight text-indigo-700">${predStr}</p>
+                   <p class="text-[11px] leading-relaxed">Projected to reach about <span class="font-bold">${goal}°</span> in <span class="font-bold">${daysAfterLast} day${daysAfterLast === 1 ? '' : 's'}</span>, based on recent elbow-flexion trend (~${dailyGain.toFixed(1)}°/day).</p>
+               </div>
+           `;
+       }
+
+
        function updatePredictionPanel() {
            syncPredictionGoalMirror();
            const out = document.getElementById('predictionResult');
            const listEl = document.getElementById('predictionHistoryList');
            const goal = Math.min(175, Math.max(10, Math.round(Number(targetAngle) || 10)));
+           const patientId = document.getElementById('patientId')?.value || '';
+
+           if (isMockPredictionPatient(patientId)) {
+               renderMockElbowPrediction(out, listEl, goal);
+               return;
+           }
 
            const log = loadDailyRomLog();
            listEl.innerHTML = '';
@@ -1238,11 +1284,11 @@
 
            const lastPeak = log.length ? log[log.length - 1].peakRom : 0;
            if (lastPeak >= goal) {
-               out.textContent = `Your latest logged best (${lastPeak}°) is already at or above your goal (${goal}°).`;
+               out.innerHTML = `<p class="text-sm leading-relaxed">Your latest logged best (<span class="font-bold">${lastPeak}°</span>) is already at or above your goal (<span class="font-bold">${goal}°</span>).</p>`;
                return;
            }
            if (log.length < 2) {
-               out.textContent = 'Finish at least two sessions on two different calendar days to estimate a trend. Each time you end a session, we save that day’s best angle reached.';
+               out.innerHTML = '<p class="text-sm leading-relaxed">Finish at least two sessions on two different calendar days to estimate a trend. Each time you end a session, we save that day\'s best angle reached.</p>';
                return;
            }
 
@@ -1251,7 +1297,7 @@
            const ys = log.map(e => Number(e.peakRom));
            const reg = linearRegression(xs, ys);
            if (!reg) {
-               out.textContent = 'Not enough variation in the log to estimate a trend.';
+               out.innerHTML = '<p class="text-sm leading-relaxed">Not enough variation in the log to estimate a trend.</p>';
                return;
            }
            const m = reg.m;
@@ -1262,7 +1308,7 @@
            const fittedLast = m * xLast + b;
 
            if (m < 0.08) {
-               out.textContent = 'Your logged peaks are not trending up enough to forecast a date. Keep training and check again after more progress.';
+               out.innerHTML = '<p class="text-sm leading-relaxed">Your logged peaks are not trending up enough to forecast a date. Keep training and check again after more progress.</p>';
                return;
            }
 
@@ -1270,12 +1316,12 @@
            const daysAfterLast = Math.ceil(xGoal - xLast - 1e-9);
 
            if (!Number.isFinite(daysAfterLast) || daysAfterLast > 3650) {
-               out.textContent = 'Based on the current trend, this goal looks too far out for a useful date. Try a smaller interim goal.';
+               out.innerHTML = '<p class="text-sm leading-relaxed">Based on the current trend, this goal looks too far out for a useful date. Try a smaller interim goal.</p>';
                return;
            }
 
            if (daysAfterLast <= 0) {
-               out.textContent = `The trend suggests you may be very close to ${goal}° (about ${fittedLast.toFixed(0)}° fitted at your last logged day). Keep going.`;
+               out.innerHTML = `<p class="text-sm leading-relaxed">The trend suggests you may be very close to <span class="font-bold">${goal}°</span> (about ${fittedLast.toFixed(0)}° fitted at your last logged day). Keep going.</p>`;
                return;
            }
 
@@ -1283,7 +1329,14 @@
            const pred = new Date(lastDate);
            pred.setDate(pred.getDate() + daysAfterLast);
            const predStr = pred.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-           out.textContent = `Rough estimate: about ${goal}° peak by ${predStr} (${daysAfterLast} calendar day${daysAfterLast === 1 ? '' : 's'} after your last logged day), if the recent trend (~${m.toFixed(2)}° per calendar day in this window) continued. For motivation only—not medical advice.`;
+           out.innerHTML = `
+               <div class="space-y-2">
+                   <p class="text-[10px] mono uppercase opacity-60 font-bold">Estimated ROM Goal Date</p>
+                   <p class="text-2xl font-black tracking-tight text-indigo-700">${predStr}</p>
+                   <p class="text-[11px] leading-relaxed">Projected to reach about <span class="font-bold">${goal}°</span> in <span class="font-bold">${daysAfterLast} calendar day${daysAfterLast === 1 ? '' : 's'}</span>, if your recent trend (~${m.toFixed(2)}°/day) continues.</p>
+                   <p class="text-[10px] opacity-60 italic">For motivation only, not medical advice.</p>
+               </div>
+           `;
        }
 
 
@@ -1364,6 +1417,19 @@
            document.getElementById('targetReps').oninput = syncTargetReps;
            syncTargetReps();
            document.getElementById('predictionRefreshBtn').onclick = updatePredictionPanel;
+           document.getElementById('configPatientApplyBtn').onclick = () => {
+               const configInput = document.getElementById('patientId');
+               configInput.value = (configInput.value || '').trim();
+               updatePredictionPanel();
+           };
+           document.getElementById('configPatientResetBtn').onclick = () => {
+               const configInput = document.getElementById('patientId');
+               configInput.value = '';
+               updatePredictionPanel();
+           };
+           document.getElementById('patientId').oninput = () => {
+               if (!document.getElementById('content-predict').classList.contains('hidden')) updatePredictionPanel();
+           };
            syncPredictionGoalMirror();
            logToConsole("Welcome to GONIOMETRIX");
            logToConsole("Connect Device for live BLE (Chrome/Edge), or Start Exercise for on-screen demo / drag the arm");
